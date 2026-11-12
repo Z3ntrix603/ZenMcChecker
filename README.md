@@ -1,76 +1,117 @@
-# ZenMcChecker
+# ZenMcChecker · Name Studio 2
 
-> **ZenMcChecker** is a fast, modern Minecraft rare username generator and availability checker with a clean, borderless dark UI.
+Ein anpassbarer Minecraft-Java-Namechecker mit deutscher Desktop-Oberfläche. Namen generieren, gegen die offiziellen APIs prüfen, Favoriten sammeln und Ergebnisse automatisch mit NameMC-Links sichern.
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/Version-1.0.1-brightgreen.svg)](https://github.com/Z3ntrix603/ZenMcChecker/releases/tag/v1.0.1)
-[![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)](https://github.com/Z3ntrix603/ZenMcChecker)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+## Starten unter Windows
 
----
+**Portable EXE:** `ZenMcChecker.exe` in einen beschreibbaren Ordner legen und starten. Python ist dafür nicht erforderlich. Die Datei wird über `python build.py` oder als Artefakt des GitHub-Actions-Workflows erzeugt. Die alte v1.0.1-Veröffentlichung enthält diese Oberfläche noch nicht.
 
-## Features
+**Aus dem Quellcode** (Python 3.10+):
 
-- **Curated Wordlists:** Over 1,500+ carefully selected dictionary words across high-demand categories (Animals, Nature, Weapons, Mythical, Colors, Materials, Gaming).
-- **OG & Rare Name Modes:** Supports 2-3 letter ultra-short OG names, palindromes, repeating character patterns, and compound Semi-OG names (e.g. `DarkBlade`, `FrostKing`).
-- **Live Mojang API Verification:** Real-time checking directly against the official Mojang API with automatic exponential backoff to handle rate limits seamlessly.
-- **Borderless Dark Slate UI:** Clean, minimalist UI without bulky borders or cluttered panels, designed for optimal clarity.
-- **Dual Live Output:** Side-by-side real-time stream separating Available (Unclaimed) from Taken (Claimed) usernames.
-- **Direct NameMC Integration:** 1-click shortcut to inspect any discovered name on NameMC.
-- **Folder & Export Management:** Automated save on check completion with custom output directory selection, TXT exports, and CSV exports containing direct profile URLs.
-
----
-
-## Generation Modes
-
-| Mode | Description | Example Output |
-|---|---|---|
-| **English Dictionary** | High-demand thematic English words | `Blade`, `Raven`, `Storm`, `Frost` |
-| **German Dictionary** | Pure ASCII German dictionary words | `Adler`, `Falke`, `Blitz`, `Klinge` |
-| **Combined Words** | Joint dictionary spanning EN & DE words | `Shadow`, `Drache`, `Wolf`, `Titan` |
-| **OG Names (3-Letter)** | Ultra-rare 2 to 3 letter real English words | `Ace`, `Zen`, `Fox`, `Bat`, `Sky` |
-| **Semi-OG Combos** | Two-word compound names with high aesthetic value | `DarkBlade`, `FrostKing`, `StormAxe` |
-| **Leet Speak** | Clean, recognizable 1337-style conversions | `8l4d3`, `570rm`, `F1r3` |
-| **Patterns & Palindromes** | Palindromic (`aba`), repeating (`aaa`), and sequential (`abc`) | `aba`, `xyx`, `lol`, `mom` |
-| **Brute Force** | Exhaustive search across custom charsets & lengths | `a-z`, `A-Z`, `0-9` combinations |
-| **Custom Text File** | Load and check your own wordlist files | Any external `.txt` file |
-
----
-
-## Quick Start
-
-### Option 1: Standalone Executable (No Python Required)
-1. Download `ZenMcChecker.exe` from the [Latest Release](https://github.com/Z3ntrix603/ZenMcChecker/releases/tag/v1.0.1).
-2. Double-click to run.
-
-### Option 2: Run from Source
-```bash
-# Clone the repository
-git clone https://github.com/Z3ntrix603/ZenMcChecker.git
-cd ZenMcChecker
-
-# Install required dependencies
-pip install -r requirements.txt
-
-# Launch application
+```powershell
+python -m pip install -r requirements.txt
 python run.py
 ```
-Or simply double-click `start.bat`.
 
----
+Nach der Installation geht auch `start.bat`.
 
-## Building the Executable
+## Generatoren
 
-To compile the standalone Windows executable yourself using PyInstaller:
+| Modus | Möglichkeiten |
+| --- | --- |
+| 3L / 4L | Genau 3 oder 4 Buchstaben aus a–z |
+| 4C | Vier Zeichen aus a–z, 0–9 und `_` |
+| 4N | Vier Ziffern, inklusive führender Nullen |
+| Wörter | 1.172 unterschiedliche kuratierte Ausgangswörter aus Deutsch und Englisch; Kategorien einzeln wählbar |
+| Wortkombinationen | Wörter und kuratierte Wortbausteine kombinieren, ohne den gesamten Kombinationsraum im Speicher anzulegen |
+| Aussprechbar | Abwechselnd Konsonanten und Vokale, beispielsweise `naro` |
+| Eigenes Muster | Feste Zeichen plus Platzhalter, beispielsweise `Zen{n}{n}` oder `{k}{v}{k}{v}` |
+| Palindrome | Vorwärts und rückwärts gleicher Name |
+| Wiederholungen | Beispielsweise `aaaa`, `7777` |
+| Eigener Zeichensatz | Nur die selbst gewählten Minecraft-Zeichen verwenden |
+| Eigene Liste | UTF-8-TXT oder CSV, mit Unterstützung der exportierten Username-Spalte |
 
-```bash
-pip install pyinstaller
-pyinstaller --noconfirm --onedir --windowed --name "ZenMcChecker" --collect-all customtkinter run.py
+Die Definition von **C** schließt Unterstriche ein. Die Minecraft-Großschreibung schafft keine zusätzlichen verfügbaren Namen: `Wolf` und `wolf` werden als ein Name behandelt. Neu registrierbare Java-Namen müssen 3–16 Zeichen aus `a-z`, `A-Z`, `0-9` und `_` haben; alte zweistellige Namen sind kein gültiges Generierungsziel.
+
+### Feinschliff
+
+- Freie Endlänge von 3 bis 16, Präfix / Suffix inklusive.
+- Enthaltene Zeichenfolge, ausgeschlossene Zeichen und ausgeschlossene Teilwörter.
+- Keine verwechselbaren Zeichen; maximale gleiche Zeichen in Folge.
+- Kleinschreibung, Großschreibung, Anfang groß oder Original; optional Leetspeak.
+- Deutsche Umlaute werden zu `ae`, `oe`, `ue`, `ss` umgewandelt.
+- Bis zu 20.000 Kandidaten je Stapel, immer ohne doppelte Namen.
+- Reproduzierbare Zufallsauswahl per Seed; fortlaufende Suche mit Startposition für weitere Stapel.
+- Generator-Presets als JSON speichern und wieder laden. Eigene Wortlisten bleiben separate Dateien.
+
+Muster-Platzhalter: `{l}` = Buchstabe, `{c}` = Buchstabe/Ziffer/Unterstrich, `{n}` = Ziffer, `{v}` = Vokal, `{k}` = Konsonant. Andere Minecraft-Zeichen bleiben fest. Die eingestellte Endlänge gilt auch im Mustermodus.
+
+Die Vorschau erzeugt keine Netzwerkabfragen. Große Suchräume werden über Indizes durchlaufen; es wird kein `37^16`-Array gebaut. Eine begrenzte Zahl an Versuchen verhindert, dass unmögliche Filter endlos suchen. Die angegebene Suchraumgröße gilt **vor** Filtern und Deduplizierung; sie ist keine Anzahl verfügbarer Namen. Bei strengen Filtern können weniger Kandidaten entstehen.
+
+## Verfügbarkeit richtig verstehen
+
+| Status | Bedeutung |
+| --- | --- |
+| Ungeprüft | Nur ein generierter Kandidat |
+| Unbelegt* | Öffentliches Mojang-Lookup findet kein Profil. Der Name kann trotzdem gesperrt oder reserviert sein. |
+| Verfügbar ✓ | Authentifizierte Minecraft-Services-Abfrage hat `AVAILABLE` zurückgegeben. |
+| Belegt | Ein Profil wurde gefunden oder Services meldet `DUPLICATE`. |
+| Gesperrt / reserviert | Services meldet `NOT_ALLOWED`. |
+| Prüffehler | Netzwerkproblem, unerwartete Antwort, Authentifizierungsfehler oder ausgeschöpftes API-Limit. Niemals als Fund gewertet. |
+
+Standardmäßig funktioniert der Checker **ohne Anmeldung** mit `https://api.mojang.com/users/profiles/minecraft/{name}`. Ein 404/204 wird nur als **Unbelegt*** gekennzeichnet. Für eine genauere Prüfung kann in den Einstellungen ein bereits vorhandener gültiger Minecraft-Java-Access-Token für diese Sitzung eingesetzt werden. Dann verwendet der Checker ausschließlich `https://api.minecraftservices.com/minecraft/profile/name/{name}/available`. Er führt keinen Login durch, fordert keine Microsoft-Passwörter an und beansprucht oder ändert keinen Namen.
+
+Tokens werden weder in der Datenbank noch in Presets, Einstellungen oder Exporten gespeichert. Autorisierungsheader gehen nur an Minecraft Services; Redirects werden nicht verfolgt. Eine abgelehnte Token-Prüfung hält den Scan an. Der authentifizierte Pfad wurde mit simulierten API-Antworten getestet; ein echter Account-Token ist zum Entwickeln nicht erforderlich.
+
+Alle Ergebnisse sind Momentaufnahmen. Auch ein bestätigter Name kann später vergeben sein. NameMC dient als direkt verlinkte Detailansicht und wird nicht gescrapt.
+
+Ein Worker, mindestens 1 Sekunde zwischen öffentlichen Anfragen, mindestens 16 Sekunden bei Token-Prüfung. Der Abstand ist auf 1–60 Sekunden einstellbar. Pro Name gibt es bis zu vier Versuche, exponentielle Pausen und Beachtung von `Retry-After`. Stoppen funktioniert auch während Pause oder Backoff; eine laufende HTTP-Anfrage hat ein endliches Timeout und darf ihren letzten Check noch sichern.
+
+## Speicherung und Wiederaufnahme
+
+Neben dem Programm entsteht automatisch:
+
+```text
+ZenMcChecker-Daten/
+  settings.json
+  studio.sqlite3
+  Scans/
+    2026-11-12_12-00-00_abcdef/
+      scan.json
+      verfuegbar.txt
+      unbelegt.txt
+      ergebnisse.csv
+      ergebnisse.json
+      NameMC-Links.html
 ```
-The compiled executable will be placed in the `dist/` directory.
 
----
+`verfuegbar.txt` enthält ausschließlich mit Token bestätigte Funde. `unbelegt.txt` enthält öffentliche Lookup-Treffer mit der beschriebenen Einschränkung. Beide enthalten Namen und direkte NameMC-Links. Entdeckungen werden sofort angehängt; nach dem Scan wird der vollständige Export aus der Datenbank aufgebaut. CSV ist UTF-8 mit BOM und enthält Status, UTC-Prüfzeitpunkt, NameMC-Link, Hinweis und gegebenenfalls UUID. Die HTML-Liste öffnet sich auch offline und verlinkt alle Ergebnisse.
 
-## License
+Jeder einzelne Check wird vor der Anzeige in SQLite gesichert. Im **Scan-Verlauf** einen Scan wählen und **Offene / Fehler fortsetzen** anklicken: Bereits geprüfte belegt/unbelegt/verfügbar/gesperrt-Namen werden ausgelassen; ungeprüfte Namen und Prüffehler kommen erneut an die Reihe. Ein nach einem Programmabbruch noch als laufend gespeicherter Scan wird im Verlauf als unterbrochen dargestellt. **Export wiederherstellen** baut beschädigte oder entfernte Exportdateien aus der Datenbank neu auf.
 
-This project is licensed under the [MIT License](LICENSE).
+Der Ergebnisordner ist in den Einstellungen wählbar. Falls neben der EXE nicht geschrieben werden kann, liegen die lokalen Daten unter `%LOCALAPPDATA%/ZenMcChecker`. Die Datenbank und die Favoriten bleiben im ursprünglichen Datenordner; das wählbare Exportziel ändert den Ort neuer Scan-Ordner.
+
+## Oberfläche
+
+- Dunkles Studio mit Mint-, Ice-, Lavender- oder Amber-Akzenten.
+- Kompakte oder großzügige Tabellenzeilen, native Fensterfunktionen zum Verschieben/Minimieren/Maximieren.
+- Live-Zähler, Fortschritt, Suche, Statusfilter und sortierbare Tabellenspalten.
+- Sterne als dauerhafte Favoriten; alle Favoriten als neuen Stapel erneut prüfen.
+- Doppelklick / Enter öffnet NameMC. Leertaste toggelt den Favoriten.
+- `Ctrl+G` generiert, `Ctrl+Enter` startet den Scan, `Ctrl+F` fokussiert die Suche, `Ctrl+C` kopiert den ausgewählten Namen in der Tabelle.
+
+Für eine flüssige Oberfläche werden höchstens 2.000 passende Zeilen gleichzeitig dargestellt. Suche und Filter berücksichtigen sämtliche Kandidaten; geprüft und exportiert wird immer der gesamte Stapel.
+
+## Entwicklung & Build
+
+```powershell
+python -m unittest discover -s tests -v
+python -m pip install -r requirements-build.txt
+python build.py
+```
+
+Ergebnis: `dist/ZenMcChecker.exe` als portable Einzeldatei. Die Tests decken Generatoren, gültige Namen, Filter, riesige Suchräume, Seeds, Pagination, API-Status, Netzwerkfehler, Rate Limits, Token-Ziel, Abbruch, Datenpersistenz, Favoriten, Wiederaufnahme und Exporte ab. Der Windows-CI-Workflow führt dieselben Tests aus und stellt die gebaute EXE als Workflow-Artefakt bereit.
+
+Module: `src/generator.py` (offline), `src/checker.py` (Netzwerk), `src/storage.py` (Persistenz), `src/main.py` (GUI). Hintergrundthreads kommunizieren ausschließlich über eine Queue mit Tk.
+
+MIT · Z3ntrix603. Unabhängiges Community-Projekt; nicht mit Mojang, Microsoft oder NameMC verbunden.

@@ -1,27 +1,24 @@
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
-# PyInstaller
-*.manifest
-*.spec
-build/
-dist/
-
-# Output directories & user findings
-results/
-*.csv
-*.txt
-!requirements.txt
-
-# Virtual Environments
 .venv/
 env/
 venv/
 ENV/
-
-# IDE & Editor files
+build/
+dist/
+*.spec
+*.manifest
+*.exe
+*.zip
+# Local findings and settings are private to the workspace.
+ZenMcChecker-Daten/
+results/
+*.csv
+*.txt
+!requirements.txt
+!requirements-build.txt
+*.log
 .vscode/
 .idea/
 *.suo
